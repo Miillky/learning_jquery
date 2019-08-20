@@ -81,4 +81,145 @@ $(() => {
 	// .prependTo(): Adds content inside of and bfore existing elements
 	// .appendTo(): Adds content inside of and after existing elements
 	// .insertAfter(): Adds content outisde of and after existing elements
+
+	/* $('span.footnote')
+		.insertAfter('#footer')
+		.wrapAll('<ol id="notes"></ol>')
+		.wrap('<li></li>'); */
+
+	const $notes = $('<ol id="notes"></ol>')
+		.insertBefore('#footer');
+
+	/* $('span.footnote')
+		.each((i, span) => {
+			// Set's the footnote number to the position where it was
+			// before appending
+			$(`<sup>${i + 1}</sup>`)
+				.insertBefore(span)
+			$(span)
+				.appendTo($notes)
+				.wrap('<li></li>')
+		}) */
+
+	// Inverted methods
+	// $('<p>Hello</p>').appendTo('#container');
+	// same as
+	// $('#container').append('<p>Hello</p>');
+
+	/* $('span.footnote')
+		.each((i, span) => {
+			$(span)
+				.before(`<sup>${i + 1}</sup>`)
+				.appendTo($notes)
+				.wrap('<li></li>');
+		}); */
+
+	// Creating larger strings with .join()
+	var str = 'a' + 'b' + 'c';
+	var str = `${'a'}${'b'}${'c'}`;
+	var str = ['a', 'b', 'c'].join('');
+
+	$('span.footnote')
+		.each((i, span) => {
+			$(span)
+				.before([
+					'<a href="#footnote-',
+					i + 1,
+					'" id="context-',
+					i + 1,
+					'" class="context">',
+					'<sup>',
+					i + 1,
+					'</sup></a>'
+				].join(''))
+			.appendTo($notes)
+			.append([
+				'&nbsp;(<a href="#context-',
+				i + 1,
+				'">context</a>)'
+			].join(''))
+			.wrap('<li></li>')
+		});
+
+	// Copying elements
+	// .clone(true) copyes events also
+	/* $('div.chapter p:eq(0)')
+		.clone()
+		.insertBefore('div.chapter'); */
+
+	$('span.pull-quote')
+		.each((i, span) => {
+			$(span)
+				.clone()
+				.addClass('pulled')
+				.find('span.drop')
+					.html('&hellip;')
+					.end() // returns the state before the call to find()
+				.text( (i, text) => text ) // strips tags from text
+				.prependTo(
+					$(span)
+						.parent()
+						.css('position', 'relative')
+				);
+		});
+
+	// To create new elements from HTML, use the $() function
+
+	// To insert new elements inside every matched element, use the following functions:
+		// .append(), .appendTo(), .prepend(), .prependTo()
+
+	// To insert new elements adjacent to every matched element, use the following functions:
+		// .after(), .insertAfter(), .before(), .insertBefore()
+
+	// To insert new elements around every matched element, use the following functions:
+		// .wrap(), .wrapAll(), .wrapInner()
+
+	// To replace every matched element with new elements or text, use the following functions:
+		// .html(), .text(), .replaceAll(), .replaceWith()
+
+	// To remove elements inside every matched element, use the following function:
+		// .empty()
+
+	// To remove every matched element and descendants from the document without actually deleting them, use the following functions:
+		// .remove(), .detach()
+
+	// EXERCISES
+	// 1. Alter the code that introduces the back to top links, so that the links only appear after the fourth paragraph.
+	$('a[href="#top"]')
+		.remove(); // removing top elements
+
+	$('<a href="#top">back to top</a>')
+		.insertAfter('div.chapter p:gt(3)');
+
+	// 2. When a back to top link is clicked on, add a new paragraph afther the link
+	// containing the message You were here. Ensure the link still works.
+	$( 'a[href="#top"]' )
+		.click( function() {
+			console.log($(this));
+			$( this ).after( '<p>You were here.</p>' );
+		});
+
+	// 3. When the author's name is clicked, turn it bold (by addint an element, rather than manuplating classes or CSS attribtues).
+	/* $( '#f-author' ).click( function() {
+		$(this).wrap('<b></b>');
+	}); */
+
+	// 4. On a subseqent click of the bolded author's name, remove the <b> element
+	// that was added (therby toggling between bold and normal text).
+	$( '#f-author' ).click( function() {
+		if( $(this).parent().is("b") )
+			$(this).unwrap();
+		else
+			$(this).wrap('<b></b>');
+	});
+	// 5. Add a class of inhabitants to each of the chapter's paragraphs
+	// without callin .addClass(). Make sure to preserve any existing classes.
+	$('.chapter p')
+		.each( (i, p) => {
+			$( p )
+				.attr( 'class', $(p).attr('class')
+								? `${$(p).attr('class')} inhabitants`
+								: 'inhabitants' )
+		})
+
 });

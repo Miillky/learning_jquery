@@ -1,12 +1,13 @@
 $( () => {
 
-	$('#letter-a a')
+	// Improved call is after ajaxStart/Stop()
+	/* $('#letter-a a')
 		.click((e) => {
 			e.preventDefault();
 
 			$('#dictionary').load('a.html');
 			alert('Loaded!');
-		});
+		}); */
 
 	const formatAuthor = entry =>
 		entry.author ? `<div class="qoute-author">${entry.author}` : '';
@@ -119,8 +120,125 @@ $( () => {
 	// 4. after installation terminal -> node server.js
 	// 5. server will run on localhost:3000
 	// 6. try request on http://localhost:3000/e?term=eavesdrop should return data
+	// 7. if using live server set header CORS to live server localhost port
 
+	$('#letter-e a')
+		.click((e) => {
+			e.preventDefault();
 
+			const requestData = {
+				term: $(e.target).text().toLowerCase()
+			}
 
+			$.get('http://localhost:3000/e', requestData, (data) => {
+				$('#dictionary').html(data);
+			});
+
+		});
+
+	$('#letter-f form' )
+		.submit((e) => {
+			e.preventDefault();
+			console.log($(e.target).serialize());
+
+			// .serialize() translates matched dom elements into a query string that can be passed alon with an AJAX request
+			// same as { term: $('input[name="term"]').val() }
+			$.post(
+				$(e.target).attr('action'),
+				$(e.target).serialize(),
+				(data) => { $('#dictionary').html(data); }
+			);
+		});
+
+	const $loading = $('<div/>')
+		.attr('id', 'loading')
+		.text('Loading...')
+		.insertBefore('#dictionary');
+
+		$(document)
+			.ajaxStart(() => {
+				$loading.show();
+			})
+			.ajaxStop(() => {
+				$loading.hide();
+			})
+
+	// Enchantment to letter a request
+	$('#letter-a a').
+		click((e) => {
+			e.preventDefault();
+			$('#dictionary')
+				.hide()
+				.load('a.html', function() {
+					$(this).fadeIn();
+				});
+		});
+
+	// Error handling
+
+	// $.get() and .load() don't provide error handling but we can use .done(), .always() and .fail() or .ajaxError()
+
+	/* $('#letter-e a')
+		.click((e) => {
+			e.preventDefault()
+
+			const requestData = {
+				term: $(e.target).text()
+			};
+
+			$.get('notfound', requestData, (data) => {
+				$('#dictionary').html(data);
+			}).fail((xhr) => {
+				$('#dictionary')
+					.html(`An error occurred:
+					${xhr.status}
+					${xhr.responseText}
+				`)
+			})
+
+		}) */
+
+	/*
+		Response code | Description
+		400 -> Bad request
+		401 -> Unatorized
+		403 -> Forbidden
+		404 -> Not found
+		500 -> Internal server error
+
+		Complete list of response codes
+		http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+	*/
+
+	// Ajax and events
+	// Events need to hendled on elements that are not rendered
+	// by AJAX, so we bind event to budy to listen for a click
+	// event that matches h3.term element even it is added later
+	// with AJAX
+	$('body')
+		.on('click', 'h3.term', (e) => {
+			$(e.target)
+				.siblings('.definition')
+				.slideToggle();
+		});
+
+});
+
+// Performing Ajax calls on page load
+// AJAX is triggered when javascript is loaded, it won't wait
+// for document to load
+Promise.all([
+	$.get('a.html'),
+	$.ready
+]).then(([content]) => {
+	$('#dictionary')
+	.hide()
+	.html(content)
+	.fadeIn()
+});
+
+$( () => {
+
+	// Using fetch()
 
 });

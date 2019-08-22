@@ -1,4 +1,4 @@
-const entriesC = [
+const entries = [
   {
     "term": "CALAMITY",
     "part": "n.",

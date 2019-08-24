@@ -1,3 +1,5 @@
 *.pdf
 /LearningjQuery3_Code
 /Chapter 6/node_modules
+/Chapter 7/node_modules
+/Chapter 8/node_modules

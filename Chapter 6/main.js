@@ -163,6 +163,8 @@ $( () => {
 				$loading.hide();
 			})
 
+	// f is a php file and needs to be set to localhost to get it...
+
 	// Enchantment to letter a request
 	$('#letter-a a').
 		click((e) => {
@@ -239,6 +241,96 @@ Promise.all([
 
 $( () => {
 
+	const formatAuthor = entry =>
+		entry.author ? `<div class="qoute-author">${entry.author}` : '';
+
+	const formatQuote = entry => entry.quote ?
+		`
+		<div class="qoute">
+			${entry.quote.reduce((result, g) => `
+				${result}
+				<div class="quote-line">${g}</div>
+			`, '')}
+			${formatAuthor(entry)}
+		</div>
+		` : '';
+
 	// Using fetch()
+	$('#letter-g a')
+		.click((e) => {
+			e.preventDefault();
+
+			fetch('http://localhost:3000/g')
+				.then(resp => resp.json())
+				.then(data => {
+					const html = data.reduce((result, entry) => `
+					${result}
+					<div class="entry">
+						<h3 class="term">${entry.term}</h3>
+						<div class="part">${entry.part}</div>
+						<div class="definition">
+							${entry.definition}
+							${formatQuote(entry)}
+						</div>
+					</div>
+					`, '');
+
+					$('#dictionary')
+						.html(html);
+
+				});
+		});
+
+
+		// EXERCISES
+		// 1. When the page loads, pull the body content of exercises-content.html into the conte are of the page
+		//$( '#dictionary' ).load( 'exercises-content.html' );
+		// 2. Rathaer then displaying the whole document at once, create tooltips for the letters
+		// in the left-hand column by loading just the appropriate letter's content from exercises-content.html when the user's mouse is over the letter
+		// 3. Add error handling from this page load, displa the error message in the content area. This error handling code by changing
+		// the script to request does-not-exist.html rather then exercises-content.html
+		$('.letter' ).mouseover( function(){
+			let element = this;
+			// change get exercises-content.html to does-not-exist.html to display error
+			$.get('exercises-content.html', function(html){
+				let title = $( html ).filter( `#${element.id}`).text();
+				$( element ).attr('title', title );
+			}).fail((error) => {
+				$('#dictionary')
+					.html(`An error occurred:
+					${error.status}
+					${error.responseText}
+				`)
+			})
+
+		});
+
+		// 4.  When the page loads, send, a JSONP request to GitHub and retrieve a list of repositories for a user.
+		// Insert the name and URL of each repositry into the content are of the page. The URL to retrieve the jQuery
+		// project's repositories is https://api.github.com/users/jquery/repos.
+		$.ajax({
+			url: 'https://api.github.com/users/jquery/repos',
+			// The name of the callback parameter, as specified by the YQL service
+			jsonp: "callback",
+			// Tell jQuery we're expecting JSONP
+			dataType: "jsonp",
+			// Tell YQL what we want and that we want JSON
+			data: {
+					q: "select title,abstract,url from search.news where query=\"cat\"",
+					format: "json"
+			},
+			// Work with the response
+			success: function( response ) {
+				console.log(response);
+					const html = response.data.reduce((result, entry) => `
+					${result}
+					<div class="entry">
+						<a href="${entry.url}">${entry.name}</a>
+					</div>
+					`, '');
+
+					$('#dictionary').html(html);
+			}
+		});
 
 });

@@ -248,7 +248,7 @@ $( () => {
 	}
 	// the first call to .find() pushes table rows into the stack, but the .end() pops
 	// this off the stack so that the next .find() call is operating on the news table once again.
-	stripe();
+	//stripe();
 
 
 	// Improving perfomance with caching
@@ -270,7 +270,7 @@ $( () => {
 			})
 	}
 
-	stripe();
+	//stripe();
 
 });
 
@@ -296,3 +296,88 @@ $( () => {
 // The :nth-child() pseudo-class
 // The .last() method within each row (using .each() to loop over the rows)
 // The :last pseudo-class within each row (using .each() to loop over the rows)
+
+$( () => {
+
+	function stripe(){
+		$('#news')
+			.find('tr.alt')
+			.removeClass('alt');
+		$('#news')
+			.find('tbody')
+			.each((i, element) => {
+
+				$(element)
+					.children(':visible')
+					.has('td')
+					.filter( (i => (i % 3) == 0 ) )
+					.next()
+					.addClass( 'alt' )
+					.next()
+					.addClass( 'alt-2' )
+
+			})
+	}
+
+	stripe();
+
+	$('#topics a')
+	.click((e) => {
+		e.preventDefault();
+		const topic = $(e.target).text();
+
+		$(e.target)
+			.addClass('selected')
+			.siblings('.selected')
+			.removeClass('selected');
+
+		$('#news tr').show();
+		if(topic != 'All'){
+			$('#news')
+				.find('tr:has(td)')
+				.not((i, element) =>
+					$(element)
+						.children(`td:containsExactly(${topic})`)
+						.length
+				)
+				.hide();
+		}
+
+		stripe();
+	});
+
+	$('#news').grandparent();
+});
+
+(($) => {
+
+		$.extend($.expr[':'], {
+			containsExactly(element, index, matches){
+				return $( element ).text() == matches[3]
+			}
+		});
+
+})(jQuery);
+
+(($) => {
+
+	$.fn.grandparent = function(){
+		var $cells = $();
+
+		this.each(function(i, element){
+			const $element = $(element);
+
+			if($element.length){
+
+				const element = $element.parent().parent()
+
+				$cells = $cells.add(element);
+
+			}
+
+		});
+
+		return this.pushStack($cells);
+	}
+
+})(jQuery);

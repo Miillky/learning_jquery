@@ -1,0 +1,16 @@
+{
+  "name": "ahapter_13_advanced_ajax",
+  "version": "1.0.0",
+  "description": "This directory contains files related to Chapter 6 of Learning jQuery, Fourth Edition. Included are the following:",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Vedran Milković",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "request": "^2.81.0"
+  }
+}
